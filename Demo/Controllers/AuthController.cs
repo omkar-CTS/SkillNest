@@ -27,7 +27,7 @@ namespace SkillNest.Controllers
             var employee = await _context.Employees
                 .FirstOrDefaultAsync(e => e.Email == loginDTO.Email && e.Password == loginDTO.Password);
 
-            if (employee == null)
+            if (employee == null || employee.Password != loginDTO.Password)
                 return Unauthorized("Invalid email or password.");
 
             var token = _tokenRepository.CreateToken(employee.Id, employee.Email, employee.Role);
