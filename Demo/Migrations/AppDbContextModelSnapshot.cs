@@ -77,6 +77,18 @@ namespace SkillNest.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -92,6 +104,9 @@ namespace SkillNest.Migrations
                             Email = "omkar@gmail.com",
                             Location = "Hyderabad",
                             Name = "Omkar Bajaga",
+                            Password = "Omkar@123",
+                            PasswordHash = new byte[0],
+                            PasswordSalt = new byte[0],
                             Role = "Employee"
                         },
                         new
@@ -100,6 +115,9 @@ namespace SkillNest.Migrations
                             Email = "rahul@gamil.com",
                             Location = "Pune",
                             Name = "Rahul",
+                            Password = "Rahul@123",
+                            PasswordHash = new byte[0],
+                            PasswordSalt = new byte[0],
                             Role = "Manager"
                         });
                 });

@@ -49,7 +49,8 @@ namespace SkillNest.Data
                     Name = "Omkar Bajaga",
                     Email = "omkar@gmail.com",
                     Location = "Hyderabad",
-                    Role = "Employee"
+                    Role = "Employee",
+                    Password = "Omkar@123"
                 },
                 new Employee
                 {
@@ -57,11 +58,10 @@ namespace SkillNest.Data
                     Name = "Rahul",
                     Email = "rahul@gamil.com",
                     Location = "Pune",
-                    Role = "Manager"
-                } 
+                    Role = "Manager",
+                    Password = "Rahul@123"
+                }
             );
-
-
         }
 
     }

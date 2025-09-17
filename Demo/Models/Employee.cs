@@ -21,5 +21,13 @@ namespace SkillNest.Models
         public ICollection<Certificates>? Certificates { get; set; }
 
         public Resume? Resume { get; set; }
+
+        [Required]
+        public byte [] PasswordHash { get; set; } = Array.Empty<byte>();
+
+        [Required]
+        public byte [] PasswordSalt { get; set; } = Array.Empty<byte>();
+
+        public required string Password { get; set; }
     }
 }
