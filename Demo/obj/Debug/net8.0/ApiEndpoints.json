@@ -222,25 +222,15 @@
   },
   {
     "ContainingType": "Demo.Controllers.SkillsController",
-    "Method": "UpdateSkills",
-    "RelativePath": "api/Skills/{employeeId}/{skillId}",
-    "HttpMethod": "PUT",
+    "Method": "GetSkills",
+    "RelativePath": "api/Skills/{employeeId}",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "employeeId",
         "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "skillId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "updatedSkill",
-        "Type": "SkillNest.Models.Skill",
         "IsRequired": true
       }
     ],
@@ -269,16 +259,21 @@
   },
   {
     "ContainingType": "Demo.Controllers.SkillsController",
-    "Method": "GetSkills",
-    "RelativePath": "api/Skills/employeeId",
-    "HttpMethod": "GET",
+    "Method": "UpdateSkill",
+    "RelativePath": "api/Skills/{id}",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "employeeId",
+        "Name": "id",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
+      },
+      {
+        "Name": "updateSkillDTO",
+        "Type": "SkillNest.DTO.UpdateSkillDTO",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -286,19 +281,14 @@
   {
     "ContainingType": "Demo.Controllers.SkillsController",
     "Method": "AddSkills",
-    "RelativePath": "api/Skills/employeeId",
+    "RelativePath": "api/Skills/bulk",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "employeeId",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "skill",
-        "Type": "SkillNest.Models.Skill",
+        "Name": "addSkillDTO",
+        "Type": "SkillNest.DTO.AddSkillListDTO",
         "IsRequired": true
       }
     ],

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkillNest.Data;
+using SkillNest.DTO;
 using SkillNest.Models;
 
 namespace Demo.Controllers
@@ -17,47 +18,80 @@ namespace Demo.Controllers
             _context = context;
         }
 
-        [HttpGet("employeeId")]
+        [HttpGet("{employeeId}")]
         public async Task<IActionResult> GetSkills(int employeeId)
         {
-            var employee = await _context.Employees
-                .Include(e => e.Skills)
-                .FirstOrDefaultAsync(e => e.Id == employeeId);
+            var skills = await _context.Skills
+                .Where(s => s.EmployeeId == employeeId)
+                .Select(s => new SkillResponseDTO
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Proficiency = s.Proficiency
+                })
+                .ToListAsync();
 
-            if (employee == null)
-                return NotFound("Employee not found!");
+            if (skills == null || skills.Count == 0)
+            {
+                return NotFound("No skills found for this employee.");
+            }
 
-            return Ok(employee.Skills);
+            return Ok(skills);
         }
 
-        [HttpPost("employeeId")]
-        public async Task<IActionResult> AddSkills(int employeeId, [FromBody] Skill skill)
+        [HttpPost("bulk")]
+        public async Task<IActionResult> AddSkills([FromBody] AddSkillListDTO addSkillDTO)
         {
-            var employee = await _context.Employees.FindAsync(employeeId);
-            if (employee == null)
-                return NotFound("Employee not found!");
+            var employee = await _context.Employees.AnyAsync(e => e.Id == addSkillDTO.EmployeeId);
 
-            skill.EmployeeId = employeeId;
-            _context.Skills.Add(skill);
+            if (employee == null)
+            {
+                return NotFound("Employee not found!");
+            }    
+
+            var skills = addSkillDTO.Skills.Select(s => new Skill
+            {
+                Name = s.Skills,
+                Proficiency = s.Proficiency,
+                EmployeeId = addSkillDTO.EmployeeId
+            }).ToList();
+            
+            _context.Skills.AddRangeAsync(skills);
             await _context.SaveChangesAsync();
 
-            return Ok(skill);
+            var response = skills.Select(s => new SkillResponseDTO
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Proficiency = s.Proficiency
+            }).ToList();
+
+            return Ok(response);
         }
 
-        [HttpPut("{employeeId}/{skillId}")]
-        public async Task<IActionResult> UpdateSkills(int employeeId, int skillId, [FromBody] Skill updatedSkill)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateSkill(int id, [FromBody] UpdateSkillDTO updateSkillDTO)
         {
-            var skill = await _context.Skills
-                .FirstOrDefaultAsync(s => s.Id == skillId && s.EmployeeId == employeeId);
+            if (id != updateSkillDTO.Id)
+                return BadRequest("Skill ID mismatch!");
 
+            var skill = await _context.Skills.FindAsync(id);
             if (skill == null)
-                return NotFound("Skill not found for this employee!");
+                return NotFound("Skill not found!");
 
-            skill.Name = updatedSkill.Name;
-            skill.Proficiency = updatedSkill.Proficiency;
+            skill.Name = updateSkillDTO.Skills;
+            skill.Proficiency = updateSkillDTO.Proficiency;
+
+            _context.Skills.Update(skill);
             await _context.SaveChangesAsync();
+            var response = new SkillResponseDTO
+            {
+                Id = skill.Id,
+                Name = skill.Name,
+                Proficiency = skill.Proficiency
+            };
+            return Ok(response);
 
-            return Ok(skill);
         }
 
         [HttpDelete("{employeeId}/{skillId}")]
