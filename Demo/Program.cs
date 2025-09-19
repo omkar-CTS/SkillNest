@@ -19,7 +19,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "Jwt",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Enter JWT Toekn with Bearer prefix"
+        Description = "Enter JWT Token"
     });
 
     options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -31,7 +31,10 @@ builder.Services.AddSwaggerGen(options =>
                 {
                     Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                     Id = "Bearer"
-                }
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header
             },
             new string[]{}
         }

@@ -31,12 +31,14 @@ namespace SkillNest.Controllers
                 return Unauthorized("Invalid email or password.");
 
             var token = _tokenRepository.CreateToken(employee.Id, employee.Email, employee.Role);
-            return Ok(new
+
+            var response = new LoginResponseDTO
             {
                 Token = token,
-                Role = employee.Role,
                 Name = employee.Name,
-            });
+                Email = employee.Email
+            };
+            return Ok(response);
         }
     }
 }

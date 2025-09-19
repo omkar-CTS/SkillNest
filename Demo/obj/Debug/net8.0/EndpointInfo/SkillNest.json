@@ -850,7 +850,7 @@
     "securitySchemes": {
       "Bearer": {
         "type": "http",
-        "description": "Enter JWT Toekn with Bearer prefix",
+        "description": "Enter JWT Token",
         "scheme": "Bearer",
         "bearerFormat": "Jwt"
       }
