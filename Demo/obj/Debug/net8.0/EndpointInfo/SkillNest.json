@@ -174,7 +174,7 @@
         }
       }
     },
-    "/api/Projects/{employeeId}": {
+    "/api/Projects/employee/{employeeId}": {
       "get": {
         "tags": [
           "Projects"
@@ -215,17 +215,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Projects"
+                "$ref": "#/components/schemas/ProjectAddDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Projects"
+                "$ref": "#/components/schemas/ProjectAddDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Projects"
+                "$ref": "#/components/schemas/ProjectAddDTO"
               }
             }
           }
@@ -237,21 +237,12 @@
         }
       }
     },
-    "/api/Projects/{employeeId}/{projectId}": {
+    "/api/Projects/{projectId}": {
       "put": {
         "tags": [
           "Projects"
         ],
         "parameters": [
-          {
-            "name": "employeeId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
           {
             "name": "projectId",
             "in": "path",
@@ -266,21 +257,42 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Projects"
+                "$ref": "#/components/schemas/UpdateProjectDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Projects"
+                "$ref": "#/components/schemas/UpdateProjectDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Projects"
+                "$ref": "#/components/schemas/UpdateProjectDTO"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Projects"
+        ],
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -581,121 +593,6 @@
         },
         "additionalProperties": false
       },
-      "Certificates": {
-        "required": [
-          "certificateNumber",
-          "dateObtained",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "dateObtained": {
-            "type": "string",
-            "format": "date"
-          },
-          "expiryDate": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "certificateNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "certificateFilePath": {
-            "type": "string",
-            "nullable": true
-          },
-          "employeeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "employee": {
-            "$ref": "#/components/schemas/Employee"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Employee": {
-        "required": [
-          "email",
-          "location",
-          "name",
-          "password",
-          "passwordHash",
-          "passwordSalt",
-          "role"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "email": {
-            "minLength": 1,
-            "type": "string",
-            "format": "email"
-          },
-          "location": {
-            "type": "string",
-            "nullable": true
-          },
-          "role": {
-            "type": "string",
-            "nullable": true
-          },
-          "skills": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Skill"
-            },
-            "nullable": true
-          },
-          "projects": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Projects"
-            },
-            "nullable": true
-          },
-          "certificates": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Certificates"
-            },
-            "nullable": true
-          },
-          "resume": {
-            "$ref": "#/components/schemas/Resume"
-          },
-          "passwordHash": {
-            "type": "string",
-            "format": "byte"
-          },
-          "passwordSalt": {
-            "type": "string",
-            "format": "byte"
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "LoginDTO": {
         "required": [
           "email",
@@ -714,17 +611,16 @@
         },
         "additionalProperties": false
       },
-      "Projects": {
+      "ProjectAddDTO": {
         "required": [
-          "name"
+          "description",
+          "endDate",
+          "projectName",
+          "startDate"
         ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "name": {
+          "projectName": {
             "type": "string",
             "nullable": true
           },
@@ -737,68 +633,36 @@
             "format": "date"
           },
           "description": {
-            "maxLength": 1000,
             "type": "string",
             "nullable": true
-          },
-          "employeeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "employee": {
-            "$ref": "#/components/schemas/Employee"
           }
         },
         "additionalProperties": false
       },
-      "Resume": {
+      "UpdateProjectDTO": {
         "required": [
-          "filePath"
+          "description",
+          "endDate",
+          "projectName",
+          "startDate"
         ],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "filePath": {
+          "projectName": {
             "type": "string",
             "nullable": true
           },
-          "employeeId": {
-            "type": "integer",
-            "format": "int32"
+          "startDate": {
+            "type": "string",
+            "format": "date"
           },
-          "employee": {
-            "$ref": "#/components/schemas/Employee"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Skill": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
+          "endDate": {
+            "type": "string",
+            "format": "date"
           },
-          "name": {
-            "minLength": 1,
-            "type": "string"
-          },
-          "proficiency": {
+          "description": {
             "type": "string",
             "nullable": true
-          },
-          "employeeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "employee": {
-            "$ref": "#/components/schemas/Employee"
           }
         },
         "additionalProperties": false

@@ -6,11 +6,11 @@ namespace SkillNest.Models
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
+        public required DateOnly StartDate { get; set; }
+        public required DateOnly EndDate { get; set; }
 
         [MaxLength(1000)]
-        public string? Description { get; set; }
+        public required string? Description { get; set; }
 
         public int EmployeeId { get; set; }
 

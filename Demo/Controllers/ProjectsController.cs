@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkillNest.Data;
+using SkillNest.DTO;
 using SkillNest.Models;
 
 namespace SkillNest.Controllers
@@ -16,50 +17,80 @@ namespace SkillNest.Controllers
             _context = context;
         }
 
-        [HttpGet("{employeeId}")]
-        public async Task<IActionResult> GetProjects(int employeeId)
+        [HttpGet("employee/{employeeId}")]
+        public async Task<IActionResult> GetProjectsByEmployee(int employeeId)
         {
-            var employee = await _context.Employees
-                .Include(e => e.Projects)
-                .FirstOrDefaultAsync(e => e.Id == employeeId);
+            var projects = await _context.Projects
+                .Where(p => p.EmployeeId == employeeId)
+                .ToListAsync();
 
-            if (employee == null)
-                return NotFound("Employee not found!");
+            if (!projects.Any())
+            {
+                return Ok(new { Message = "No projects added yet. Please add a project." });
+            }
 
-            return Ok(employee.Projects);
+            var projectDTOs = projects.Select(p => new ProjectResponseDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                StartDate = p.StartDate,
+                EndDate = p.EndDate
+            });
+            return Ok(projectDTOs);
         }
 
-        [HttpPost("{employeeId}")]
-        public async Task<IActionResult> AddProject(int employeeId, [FromBody] Projects project)
+        [HttpPost("employee/{employeeId}")]
+        public async Task<IActionResult> AddProject(int employeeId, [FromBody] ProjectAddDTO projectAddDTO)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
             if (employee == null)
                 return NotFound("Employee not found!");
 
-            project.EmployeeId = employeeId;
+            var project = new Projects
+            {
+                Name = projectAddDTO.ProjectName,
+                Description = projectAddDTO.Description,
+                StartDate = projectAddDTO.StartDate,
+                EndDate = projectAddDTO.EndDate,
+                EmployeeId = employeeId
+            };
+
             _context.Projects.Add(project);
             await _context.SaveChangesAsync();
 
-            return Ok(project);
+            return Ok(new { Message = "Project Added Successfully.", ProjectId = project.Id });
         }
 
-        [HttpPut("{employeeId}/{projectId}")]
-        public async Task<IActionResult> UpdateProject(int employeeId, int projectId, [FromBody] Projects updatedProject)
+        [HttpPut("{projectId}")]
+        public async Task<IActionResult> UpdateProject(int projectId, UpdateProjectDTO updateProjectDTO)
         {
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(p => p.Id == projectId && p.EmployeeId == employeeId);
-
+            var project = await _context.Projects.FindAsync(projectId);
             if (project == null)
-                return NotFound("Project not found for this employee!");
+                return NotFound("Project not found!");
 
-            project.Name = updatedProject.Name;
-            project.Description = updatedProject.Description;
-            project.StartDate = updatedProject.StartDate;
-            project.EndDate = updatedProject.EndDate;
+            project.Name = updateProjectDTO.ProjectName;
+            project.Description = updateProjectDTO.Description;
+            project.StartDate = updateProjectDTO.StartDate;
+            project.EndDate = updateProjectDTO.EndDate;
 
+            _context.Projects.Update(project);
             await _context.SaveChangesAsync();
 
-            return Ok(project);
+            return Ok(new { Message = "Project Updated Successfully." });
+        }
+
+        [HttpDelete("{projectId}")]
+        public async Task<IActionResult> DeleteProject(int projectId)
+        {
+            var project = await _context.Projects.FindAsync(projectId);
+            if (project == null)
+                return NotFound("Project not found!");
+
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Project Deleted Successfully." });
         }
     }
 }
