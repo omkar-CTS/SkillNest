@@ -584,6 +584,7 @@
       "Certificates": {
         "required": [
           "certificateNumber",
+          "dateObtained",
           "name"
         ],
         "type": "object",
