@@ -17,6 +17,48 @@
   },
   {
     "ContainingType": "Demo.Controllers.CertificatesController",
+    "Method": "DeleteCertificate",
+    "RelativePath": "api/Certificates/{certificateId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "certificateId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Demo.Controllers.CertificatesController",
+    "Method": "UpdateCertificate",
+    "RelativePath": "api/Certificates/{certificationId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "certificationId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "updateCertificationDTO",
+        "Type": "SkillNest.DTO.UpdateCertificationDTO",
+        "IsRequired": true
+      },
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Demo.Controllers.CertificatesController",
     "Method": "GetCertificates",
     "RelativePath": "api/Certificates/{employeeId}",
     "HttpMethod": "GET",
@@ -40,49 +82,38 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "employeeId",
+        "Name": "Id",
         "Type": "System.Int32",
-        "IsRequired": true
+        "IsRequired": false
       },
       {
-        "Name": "file",
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "File",
         "Type": "Microsoft.AspNetCore.Http.IFormFile",
         "IsRequired": false
       },
       {
-        "Name": "name",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "date",
+        "Name": "Issuedate",
         "Type": "System.DateOnly",
         "IsRequired": false
       },
       {
-        "Name": "certificateNumber",
-        "Type": "System.String",
+        "Name": "ExpiryDate",
+        "Type": "System.Nullable\u00601[[System.DateOnly, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Demo.Controllers.CertificatesController",
-    "Method": "DeleteCertificate",
-    "RelativePath": "api/Certificates/{employeeId}/{certificateId}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "employeeId",
-        "Type": "System.Int32",
-        "IsRequired": true
       },
       {
-        "Name": "certificateId",
-        "Type": "System.Int32",
+        "Name": "CertificateNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "employeeId",
+        "Type": "",
         "IsRequired": true
       }
     ],

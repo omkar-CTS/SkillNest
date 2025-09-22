@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.4",
   "info": {
-    "title": "SkillNest",
-    "version": "1.0"
+    "title": "SkillNest API",
+    "version": "v1"
   },
   "paths": {
     "/api/Auth/login": {
@@ -68,8 +68,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -77,35 +76,55 @@
           "content": {
             "multipart/form-data": {
               "schema": {
+                "required": [
+                  "CertificateNumber",
+                  "File",
+                  "Issuedate",
+                  "Name"
+                ],
                 "type": "object",
                 "properties": {
-                  "file": {
+                  "Id": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "Name": {
+                    "type": "string"
+                  },
+                  "File": {
                     "type": "string",
                     "format": "binary"
                   },
-                  "name": {
-                    "type": "string"
-                  },
-                  "date": {
+                  "Issuedate": {
                     "type": "string",
                     "format": "date"
                   },
-                  "certificateNumber": {
+                  "ExpiryDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "CertificateNumber": {
                     "type": "string"
                   }
                 }
               },
               "encoding": {
-                "file": {
+                "Id": {
                   "style": "form"
                 },
-                "name": {
+                "Name": {
                   "style": "form"
                 },
-                "date": {
+                "File": {
                   "style": "form"
                 },
-                "certificateNumber": {
+                "Issuedate": {
+                  "style": "form"
+                },
+                "ExpiryDate": {
+                  "style": "form"
+                },
+                "CertificateNumber": {
                   "style": "form"
                 }
               }
@@ -119,21 +138,44 @@
         }
       }
     },
-    "/api/Certificates/{employeeId}/{certificateId}": {
-      "delete": {
+    "/api/Certificates/{certificationId}": {
+      "put": {
         "tags": [
           "Certificates"
         ],
         "parameters": [
           {
-            "name": "employeeId",
+            "name": "certificationId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
             }
-          },
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCertificationDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Certificates/{certificateId}": {
+      "delete": {
+        "tags": [
+          "Certificates"
+        ],
+        "parameters": [
           {
             "name": "certificateId",
             "in": "path",
@@ -633,6 +675,34 @@
             "format": "date"
           },
           "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateCertificationDTO": {
+        "required": [
+          "certificateNumber",
+          "issuedate",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "issuedate": {
+            "type": "string",
+            "format": "date"
+          },
+          "expiryDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "certificateNumber": {
             "type": "string",
             "nullable": true
           }

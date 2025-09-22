@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SkillNest.Data;
+using SkillNest.DTO;
 using SkillNest.Models;
 using System.Runtime.CompilerServices;
 
@@ -20,75 +21,109 @@ namespace Demo.Controllers
         }
 
         [HttpGet("{employeeId}")]
-        public async Task<IActionResult> GetCertificates(int employeeId)
+       public async Task<IActionResult> GetCertificates(int employeeId)
         {
-            var employee = await _context.Employees
-                .Include(e => e.Certificates)
-                .FirstOrDefaultAsync(e => e.Id == employeeId);
-
-            if (employee == null)
-                return NotFound("Employee not found!");
-
-            return Ok(employee.Certificates);
+            var certificates = await _context.Certificates
+                .Where(c => c.EmployeeId == employeeId)
+                .Select(c => new CertificateResponseDTO
+                {
+                    Id  = c.Id,
+                    CertificateNumber = c.CertificateNumber,
+                   Title = c.Name,
+                   DateObtained = c.DateObtained,
+                   FilePath = c.CertificateFilePath
+                }).ToListAsync();
+            if (certificates == null || certificates.Count == 0)
+                return NotFound("No certificates found for the specified employee.");
+            return Ok(certificates);
         }
 
         [HttpPost("{employeeId}")]
-        public async Task<IActionResult> UploadCertificate(int employeeId, IFormFile file, [FromForm] string name, [FromForm] DateOnly date, [FromForm] string certificateNumber)
+        public async Task<IActionResult> UploadCertificate([FromForm] AddCertificationDTO addCertificationDTO)
         {
-            var employee = await _context.Employees.FindAsync(employeeId);
+            if (addCertificationDTO.File == null || addCertificationDTO.File.Length == 0)
+                return BadRequest("Please upload a certificate.");
 
-            if (employee == null)
-                return NotFound("Employee not found!");
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
+            if (Path.GetExtension(addCertificationDTO.File.FileName).ToLower() != ".pdf")
+                return BadRequest("Only PDF files are allowed.");
 
-            var uploadsFolder = Path.Combine(_environment.ContentRootPath, "Uploads");
+            string uploadsFolder = Path.Combine(_environment.WebRootPath, "Certificates");
             if (!Directory.Exists(uploadsFolder))
+            {
                 Directory.CreateDirectory(uploadsFolder);
+            }
 
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-            var filePath = Path.Combine(uploadsFolder, file.FileName);
+            string uniqueFileName = $"{Guid.NewGuid()}_{addCertificationDTO.File.FileName}";
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                await file.CopyToAsync(stream);
+                await addCertificationDTO.File.CopyToAsync(stream);
             }
 
             var certificate = new Certificates
             {
-                Name = name,
-                DateObtained = date,
-                CertificateNumber = certificateNumber,
-                CertificateFilePath = "/uploads/" + uniqueFileName,
-                EmployeeId = employeeId
+                EmployeeId = addCertificationDTO.Id,
+                Name = addCertificationDTO.Name,
+                DateObtained = addCertificationDTO.Issuedate,
+                ExpiryDate = addCertificationDTO.ExpiryDate,
+                CertificateNumber = addCertificationDTO.CertificateNumber,
+                CertificateFilePath = $"/Certificates/{uniqueFileName}"
             };
-            
+
             _context.Certificates.Add(certificate);
             await _context.SaveChangesAsync();
 
-            return Ok(certificate);
+            return Ok(new { Message = "Certificate uploaded successfully!" });
         }
 
-
-        [HttpDelete("{employeeId}/{certificateId}")]
-        public async Task<IActionResult> DeleteCertificate(int employeeId, int certificateId)
+        [HttpPut("{certificationId}")]
+        public async Task<IActionResult> UpdateCertificate(int certificationId, [FromBody] UpdateCertificationDTO updateCertificationDTO, IFormFile file)
         {
-            var certificate = await _context.Certificates
-                .FirstOrDefaultAsync(c => c.Id == certificateId && c.EmployeeId == employeeId);
-
+            var certificate = await _context.Certificates.FindAsync(certificationId);
             if (certificate == null)
-                return NotFound("Certificate not found for this employee!");
+                return NotFound("Certificate not found!");
 
-            var filePath = Path.Combine(_environment.WebRootPath, certificate.CertificateFilePath.TrimStart('/'));
-            if (System.IO.File.Exists(filePath))
+            certificate.Name = updateCertificationDTO.Name;
+            certificate.DateObtained = updateCertificationDTO.Issuedate;
+            certificate.ExpiryDate = updateCertificationDTO.ExpiryDate;
+            certificate.CertificateNumber = updateCertificationDTO.CertificateNumber;
+
+            if (file != null && file.Length > 0)
             {
-                System.IO.File.Delete(filePath);
-            } 
-            
-            _context.Certificates.Remove(certificate);
+                if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+                    return BadRequest("Only PDF files are allowed.");
+
+                var uploadsFolder = Path.Combine(_environment.ContentRootPath, "uploads", "Certificates");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var filePath = Path.Combine(uploadsFolder, Guid.NewGuid() + Path.GetExtension(file.FileName));
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                certificate.CertificateFilePath = filePath;
+            }
+            _context.Certificates.Update(certificate);
+            await _context.SaveChangesAsync();
+            return Ok( new { Message = "Certification Updated Successfully!" } );
+        }
+
+        [HttpDelete("{certificateId}")]
+        public async Task<IActionResult> DeleteCertificate(int certificateId)
+        {
+             var certificate = await _context.Certificates.FindAsync(certificateId);
+             if (certificate == null)
+                 return NotFound("Certificate not found!");
+
+             _context.Certificates.Remove(certificate);
             await _context.SaveChangesAsync();
 
-            return Ok("Certificate deleted successfully."); 
+            return Ok(new { Message = "Certification Deleted Successfully." });
 
         }
     }
