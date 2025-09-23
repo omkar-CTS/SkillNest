@@ -519,3 +519,4 @@ C:\Users\2401617\Videos\SkillNest\Demo\obj\Debug\net8.0\refint\SkillNest.dll
 C:\Users\2401617\Videos\SkillNest\Demo\obj\Debug\net8.0\SkillNest.pdb
 C:\Users\2401617\Videos\SkillNest\Demo\obj\Debug\net8.0\SkillNest.genruntimeconfig.cache
 C:\Users\2401617\Videos\SkillNest\Demo\obj\Debug\net8.0\ref\SkillNest.dll
+C:\Users\2401617\Videos\SkillNest\Demo\bin\Debug\net8.0\SkillNest.staticwebassets.runtime.json

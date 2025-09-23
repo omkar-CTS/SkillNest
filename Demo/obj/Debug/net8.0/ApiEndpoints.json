@@ -45,13 +45,33 @@
         "IsRequired": true
       },
       {
-        "Name": "updateCertificationDTO",
-        "Type": "SkillNest.DTO.UpdateCertificationDTO",
-        "IsRequired": true
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
       },
       {
-        "Name": "file",
+        "Name": "File",
         "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "Issuedate",
+        "Type": "System.DateOnly",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExpiryDate",
+        "Type": "System.Nullable\u00601[[System.DateOnly, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "CertificateNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "EmployeeId",
+        "Type": "System.Int32",
         "IsRequired": false
       }
     ],
@@ -82,9 +102,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "Id",
+        "Name": "employeeId",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       },
       {
         "Name": "Name",
@@ -112,9 +132,9 @@
         "IsRequired": false
       },
       {
-        "Name": "employeeId",
-        "Type": "",
-        "IsRequired": true
+        "Name": "EmployeeId",
+        "Type": "System.Int32",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

@@ -6,6 +6,6 @@
         public required string Title { get; set; }
         public required string CertificateNumber { get; set; }
         public DateOnly DateObtained { get; set; }
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = string.Empty;
     }
 }

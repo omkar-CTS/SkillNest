@@ -27,19 +27,19 @@ namespace Demo.Controllers
                 .Where(c => c.EmployeeId == employeeId)
                 .Select(c => new CertificateResponseDTO
                 {
-                    Id  = c.Id,
-                    CertificateNumber = c.CertificateNumber,
+                   Id  = c.Id,
+                   CertificateNumber = c.CertificateNumber,
                    Title = c.Name,
                    DateObtained = c.DateObtained,
-                   FilePath = c.CertificateFilePath
+                   FilePath = c.CertificateFilePath ?? string.Empty
                 }).ToListAsync();
-            if (certificates == null || certificates.Count == 0)
+            if (!certificates.Any())
                 return NotFound("No certificates found for the specified employee.");
             return Ok(certificates);
         }
 
         [HttpPost("{employeeId}")]
-        public async Task<IActionResult> UploadCertificate([FromForm] AddCertificationDTO addCertificationDTO)
+        public async Task<IActionResult> UploadCertificate(int employeeId, [FromForm] AddCertificationDTO addCertificationDTO)
         {
             if (addCertificationDTO.File == null || addCertificationDTO.File.Length == 0)
                 return BadRequest("Please upload a certificate.");
@@ -47,14 +47,15 @@ namespace Demo.Controllers
             if (Path.GetExtension(addCertificationDTO.File.FileName).ToLower() != ".pdf")
                 return BadRequest("Only PDF files are allowed.");
 
-            string uploadsFolder = Path.Combine(_environment.WebRootPath, "Certificates");
+            var webRootPath  = _environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var uploadsFolder = Path.Combine(webRootPath, "Certificates");
             if (!Directory.Exists(uploadsFolder))
             {
                 Directory.CreateDirectory(uploadsFolder);
             }
 
-            string uniqueFileName = $"{Guid.NewGuid()}_{addCertificationDTO.File.FileName}";
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            var uniqueFileName = $"{Guid.NewGuid()}_{addCertificationDTO.File.FileName}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -63,7 +64,7 @@ namespace Demo.Controllers
 
             var certificate = new Certificates
             {
-                EmployeeId = addCertificationDTO.Id,
+                EmployeeId = employeeId,
                 Name = addCertificationDTO.Name,
                 DateObtained = addCertificationDTO.Issuedate,
                 ExpiryDate = addCertificationDTO.ExpiryDate,
@@ -78,7 +79,7 @@ namespace Demo.Controllers
         }
 
         [HttpPut("{certificationId}")]
-        public async Task<IActionResult> UpdateCertificate(int certificationId, [FromBody] UpdateCertificationDTO updateCertificationDTO, IFormFile file)
+        public async Task<IActionResult> UpdateCertificate(int certificationId, [FromForm] AddCertificationDTO updateCertificationDTO )
         {
             var certificate = await _context.Certificates.FindAsync(certificationId);
             if (certificate == null)
@@ -89,24 +90,26 @@ namespace Demo.Controllers
             certificate.ExpiryDate = updateCertificationDTO.ExpiryDate;
             certificate.CertificateNumber = updateCertificationDTO.CertificateNumber;
 
-            if (file != null && file.Length > 0)
+            if (updateCertificationDTO.File != null && updateCertificationDTO.File.Length > 0)
             {
-                if (Path.GetExtension(file.FileName).ToLower() != ".pdf")
+                if (Path.GetExtension(updateCertificationDTO.File.FileName).ToLower() != ".pdf")
                     return BadRequest("Only PDF files are allowed.");
 
-                var uploadsFolder = Path.Combine(_environment.ContentRootPath, "uploads", "Certificates");
+                var webRootPath = _environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                var uploadsFolder = Path.Combine(webRootPath, "Certificates");
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
 
-                var filePath = Path.Combine(uploadsFolder, Guid.NewGuid() + Path.GetExtension(file.FileName));
+                var uniqueFileName = $"{Guid.NewGuid()}_{updateCertificationDTO.File.FileName}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await file.CopyToAsync(stream);
+                    await updateCertificationDTO.File.CopyToAsync(stream);
                 }
 
-                certificate.CertificateFilePath = filePath;
+                certificate.CertificateFilePath = $"/Certificates/{uniqueFileName}";
             }
             _context.Certificates.Update(certificate);
             await _context.SaveChangesAsync();

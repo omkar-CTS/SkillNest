@@ -68,7 +68,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             }
           }
         ],
@@ -78,16 +79,13 @@
               "schema": {
                 "required": [
                   "CertificateNumber",
+                  "EmployeeId",
                   "File",
                   "Issuedate",
                   "Name"
                 ],
                 "type": "object",
                 "properties": {
-                  "Id": {
-                    "type": "integer",
-                    "format": "int32"
-                  },
                   "Name": {
                     "type": "string"
                   },
@@ -105,13 +103,14 @@
                   },
                   "CertificateNumber": {
                     "type": "string"
+                  },
+                  "EmployeeId": {
+                    "type": "integer",
+                    "format": "int32"
                   }
                 }
               },
               "encoding": {
-                "Id": {
-                  "style": "form"
-                },
                 "Name": {
                   "style": "form"
                 },
@@ -125,6 +124,9 @@
                   "style": "form"
                 },
                 "CertificateNumber": {
+                  "style": "form"
+                },
+                "EmployeeId": {
                   "style": "form"
                 }
               }
@@ -158,7 +160,58 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateCertificationDTO"
+                "required": [
+                  "CertificateNumber",
+                  "EmployeeId",
+                  "File",
+                  "Issuedate",
+                  "Name"
+                ],
+                "type": "object",
+                "properties": {
+                  "Name": {
+                    "type": "string"
+                  },
+                  "File": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "Issuedate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "ExpiryDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "CertificateNumber": {
+                    "type": "string"
+                  },
+                  "EmployeeId": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "encoding": {
+                "Name": {
+                  "style": "form"
+                },
+                "File": {
+                  "style": "form"
+                },
+                "Issuedate": {
+                  "style": "form"
+                },
+                "ExpiryDate": {
+                  "style": "form"
+                },
+                "CertificateNumber": {
+                  "style": "form"
+                },
+                "EmployeeId": {
+                  "style": "form"
+                }
               }
             }
           }
@@ -681,34 +734,6 @@
         },
         "additionalProperties": false
       },
-      "UpdateCertificationDTO": {
-        "required": [
-          "certificateNumber",
-          "issuedate",
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "issuedate": {
-            "type": "string",
-            "format": "date"
-          },
-          "expiryDate": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "certificateNumber": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "additionalProperties": false
-      },
       "UpdateProjectDTO": {
         "required": [
           "description",
@@ -785,9 +810,9 @@
     "securitySchemes": {
       "Bearer": {
         "type": "http",
-        "description": "Enter JWT Token",
+        "description": "Enter JWT Token.",
         "scheme": "Bearer",
-        "bearerFormat": "Jwt"
+        "bearerFormat": "JWT"
       }
     }
   },
