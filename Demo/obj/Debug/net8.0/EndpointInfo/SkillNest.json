@@ -269,6 +269,18 @@
         }
       }
     },
+    "/api/Employee": {
+      "get": {
+        "tags": [
+          "Employee"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Projects/employee/{employeeId}": {
       "get": {
         "tags": [

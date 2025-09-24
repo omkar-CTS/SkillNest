@@ -141,6 +141,16 @@
   },
   {
     "ContainingType": "SkillNest.Controllers.EmployeeController",
+    "Method": "GetAllEmployees",
+    "RelativePath": "api/Employee",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SkillNest.Controllers.EmployeeController",
     "Method": "GetEmployee",
     "RelativePath": "api/Employee/{id}",
     "HttpMethod": "GET",
