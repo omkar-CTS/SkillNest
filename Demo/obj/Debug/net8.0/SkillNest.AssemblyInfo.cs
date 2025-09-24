@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SkillNest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ab477e4c3eea4f3eb7204710777e002f838c9115")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fbc139c9c5acef7a1229f99df29b2388567de328")]
 [assembly: System.Reflection.AssemblyProductAttribute("SkillNest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SkillNest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
