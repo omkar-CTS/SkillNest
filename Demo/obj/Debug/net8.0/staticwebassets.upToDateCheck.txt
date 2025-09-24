@@ -2,3 +2,4 @@ wwwroot\Certificates\50b6cbe3-0ccd-4b49-ae89-b830c9732e37_Angular Cert_Omkar.pdf
 wwwroot\Certificates\eefd7ed7-3948-49bc-aae9-2d57e72129dc_Angular Cert_Omkar.pdf
 wwwroot\upload\resumes\67ec620e-9a53-4c36-b657-ed886a8f64fd_HiteshResume.pdf
 wwwroot\upload\resumes\3323bf34-2f90-493a-bb5a-959192c99644_OmkarBajaga_Resume.pdf
+wwwroot\uploads\resumes\9ed1e379-5b3d-44dc-82e2-f7552b8135cf_OmkarBajaga_Resume.pdf
