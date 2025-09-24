@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SkillNest.Data;
 using SkillNest.DTO;
 using SkillNest.Models;
+using System.IO;
 
 namespace SkillNest.Controllers
 {
@@ -41,7 +42,7 @@ namespace SkillNest.Controllers
             if (Path.GetExtension(resumeUploadDTO.File.FileName).ToLower() != ".pdf")
                 return BadRequest("Only PDF files are allowed.");
 
-            var uploadsFolder = Path.Combine(GetWebRootPath(), "upload", "resumes");
+            var uploadsFolder = Path.Combine(GetWebRootPath(), "uploads", "resumes");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
@@ -52,12 +53,13 @@ namespace SkillNest.Controllers
             {
                 await resumeUploadDTO.File.CopyToAsync(stream);
             }
+
             if (employee.Resume == null)
             {
                 employee.Resume = new Resume
                 {
-                   FilePath = "/uploads/resumes/" + uniqueFileName,
-                   EmployeeId = employeeId,
+                    FilePath = "/uploads/resumes/" + uniqueFileName,
+                    EmployeeId = employeeId,
                 };
                 _context.Resumes.Add(employee.Resume);
             }
@@ -95,7 +97,7 @@ namespace SkillNest.Controllers
             if (Path.GetExtension(resumeUploadDTO.File.FileName).ToLower() != ".pdf")
                 return BadRequest("Only PDF files are allowed.");
 
-            var uploadsFolder = Path.Combine(GetWebRootPath(), "upload", "resumes");
+            var uploadsFolder = Path.Combine(GetWebRootPath(), "uploads", "resumes");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
@@ -106,12 +108,13 @@ namespace SkillNest.Controllers
             {
                 await resumeUploadDTO.File.CopyToAsync(stream);
             }
+
             if (employee.Resume == null)
             {
-               employee.Resume = new Resume
+                employee.Resume = new Resume
                 {
-                   FilePath = "/uploads/resumes/" + uniqueFileName,
-                   EmployeeId = employeeId,
+                    FilePath = "/uploads/resumes/" + uniqueFileName,
+                    EmployeeId = employeeId,
                 };
                 _context.Resumes.Add(employee.Resume);
             }
@@ -127,7 +130,7 @@ namespace SkillNest.Controllers
 
             var response = new ResumeResponseDTO
             {
-                Id = employeeId,
+                Id = employee.Resume.Id,
                 FilePath = employee.Resume.FilePath,
                 EmployeeId = employee.Resume.EmployeeId
             };
@@ -135,10 +138,33 @@ namespace SkillNest.Controllers
             return Ok(response);
         }
 
+        [HttpGet("{employeeId}/meta")]
+        public async Task<IActionResult> GetResumeMeta(int employeeId)
+        {
+            var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.EmployeeId == employeeId);
+
+            if (resume == null || string.IsNullOrEmpty(resume.FilePath))
+                return NotFound("Resume Not Found!");
+
+            // Extract original file name after the underscore
+            var uniqueName = Path.GetFileName(resume.FilePath); // e.g., a932b2e1-..._HiteshResume.pdf
+            var underscoreIndex = uniqueName.IndexOf('_');
+            var originalFileName = underscoreIndex >= 0 ? uniqueName.Substring(underscoreIndex + 1) : uniqueName;
+
+            return Ok(new
+            {
+                FileName = originalFileName, // <-- Will show just HiteshResume.pdf
+                FilePath = resume.FilePath,
+                EmployeeId = resume.EmployeeId,
+                ResumeId = resume.Id,
+                DownloadUrl = Url.Action("DownloadResume", new { employeeId = resume.EmployeeId })
+            });
+        }
+
         [HttpGet("{employeeId}")]
         public async Task<IActionResult> DownloadResume(int employeeId)
         {
-            var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.Id == employeeId);
+            var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.EmployeeId == employeeId);
 
             if (resume == null || string.IsNullOrEmpty(resume.FilePath))
                 return NotFound("Resume Not Found!");
@@ -148,7 +174,8 @@ namespace SkillNest.Controllers
                 return NotFound("File not found on server!");
 
             var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            return File(fileBytes, "application/pdf", "resume.pdf");
+            var fileName = Path.GetFileName(resume.FilePath); // Serve with actual filename
+            return File(fileBytes, "application/pdf", fileName);
         }
 
         [HttpDelete("{employeeId}")]
@@ -160,7 +187,7 @@ namespace SkillNest.Controllers
             if (resume == null)
                 return NotFound("Resume not found!");
 
-            var filePath = Path.Combine(_environment.WebRootPath, resume.FilePath.TrimStart('/'));
+            var filePath = Path.Combine(GetWebRootPath(), resume.FilePath.TrimStart('/'));
             if (System.IO.File.Exists(filePath))
                 System.IO.File.Delete(filePath);
 

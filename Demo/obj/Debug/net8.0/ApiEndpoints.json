@@ -314,6 +314,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "SkillNest.Controllers.ResumesController",
+    "Method": "GetResumeMeta",
+    "RelativePath": "api/Resumes/{employeeId}/meta",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Demo.Controllers.SkillsController",
     "Method": "GetSkills",
     "RelativePath": "api/Skills/{employeeId}",
